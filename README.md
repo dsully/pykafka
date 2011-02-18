@@ -60,3 +60,5 @@ pip install pykafka
 Contact:
 
 Please use the GitHub issues: https://github.com/dsully/pykafka/issues
+
+* Inspiried from Alejandro Crosa's kafka-rb: https://github.com/acrosa/kafka-rb
