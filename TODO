@@ -1,0 +1,6 @@
+ZooKeeper integration: http://sna-projects.com/kafka/design.php
+
+Handle offset requests. (ZK?)
+Handle multi-fetch & multi-produce.
+
+Finish tests.
