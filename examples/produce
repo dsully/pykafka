@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+
+import kafka
+import time
+
+producer = kafka.producer.Producer('test')
+message1 = kafka.message.Message("some random message content?")
+message2 = kafka.message.Message("foo!")
+message3 = kafka.message.Message(time.time())
+
+producer.send([message1, message2, message3])

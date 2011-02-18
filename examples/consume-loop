@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+
+import kafka
+
+consumer = kafka.consumer.Consumer('test')
+
+for message in consumer.consume():
+  print message
