@@ -2,13 +2,14 @@ import contextlib
 import itertools
 import struct
 
+import kafka.api
 import kafka.io
-import kafka.request_type
+import kafka.message
 
 class Producer(kafka.io.IO):
   """ Class for sending data to a `Kafka <http://sna-projects.com/kafka/>`_ broker. """
 
-  PRODUCE_REQUEST_ID = kafka.request_type.PRODUCE
+  PRODUCE_REQUEST_ID = kafka.api.PRODUCE
 
   def __init__(self, topic, partition=0, host='localhost', port=9092):
     kafka.io.IO.__init__(self, host, port)
@@ -53,5 +54,5 @@ class Producer(kafka.io.IO):
     """ Send messages with an implict `send`. """
 
     messages = []
-    yield(messages)
+    yield messages
     self.send(messages)

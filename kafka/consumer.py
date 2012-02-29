@@ -1,12 +1,15 @@
+# XXX - this is what approximately maps to consumer/SimpleConsumer.scala
+
 import struct
 import time
 
+import kafka.api
 import kafka.io
-import kafka.request_type
+import kafka.message
 
 class Consumer(kafka.io.IO):
 
-  CONSUME_REQUEST_TYPE = kafka.request_type.FETCH
+  CONSUME_REQUEST_TYPE = kafka.api.FETCH
 
   MAX_SIZE = 1024 * 1024
 
@@ -78,7 +81,7 @@ class Consumer(kafka.io.IO):
     processed = 0
     length    = len(data) - 4
 
-    while (processed <= length):
+    while processed <= length:
       message_size = struct.unpack('>i', data[processed:processed+4])[0]
       messages.append(kafka.message.parse_from(data[processed:processed + message_size + 4]))
       processed += 4 + message_size

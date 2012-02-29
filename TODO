@@ -3,4 +3,8 @@ ZooKeeper integration: http://sna-projects.com/kafka/design.php
 Handle offset requests. (ZK?)
 Handle multi-fetch & multi-produce.
 
+Handle rebalancing properly with ZK get_children watch in a thread.
+
 Finish tests.
+
+Make second pass over Scala code to account for thread locking / sync.

@@ -16,7 +16,7 @@ setuptools.setup(
   platforms = 'any',
 
   # What are we packaging up?
-  packages = setuptools.find_packages('kafka'),
+  packages = ['kafka'],
 
   tests_require = [
     'nose',
@@ -24,5 +24,5 @@ setuptools.setup(
   ],
 
   zip_safe = True,
-  verbose = False,
+  #verbose = False,
 )

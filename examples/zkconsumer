@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+import logging
+import threading
+import sys
+
+import kafka.utils
+import kafka.zk_consumer
+
+TOPIC = "test"
+PROPS = "/path/to/consumer.properties"
+PARTITIONS = 1 # Number of partitions to consume from.
+
+log = logging.getLogger('kafka')
+
+console = logging.StreamHandler()
+console.setFormatter(logging.Formatter('[%(levelname)-4s] %(asctime)s %(name)s - %(message)s'))
+console.setLevel(logging.DEBUG)
+
+log.addHandler(console)
+
+# This controls the global level for loggers. Filtering will occur in handlers for levels.
+log.setLevel(logging.DEBUG)
+
+def main():
+
+  log.info("Starting consumer...")
+
+  props = dict()
+
+  consumer_config       = kafka.utils.Config(props)
+  consumer_connector    = kafka.zk_consumer.ConsumerConnector(consumer_config)
+  topic_message_streams = consumer_connector.create_message_streams({ TOPIC: PARTITIONS })
+
+  threads = list()
+
+  # Create a consumer thread for each topic.
+  for topic, stream_list in topic_message_streams.iteritems():
+    for stream in stream_list:
+      threads.append(ZKConsumerThread("ZKConsumerThread-" + topic, stream))
+
+  for thread in threads:
+    thread.start()
+
+  # Catch a Ctrl-C in the main thread, and notify everyone else.
+  try:
+    while True:
+      pass
+
+  except KeyboardInterrupt:
+    log.info("Caught Ctrl-C, shutting down consumer threads...")
+
+    consumer_connector.shutdown()
+
+    for thread in threads:
+      thread.shutdown()
+
+    log.info("Consumer threads shut down.")
+    sys.exit()
+
+class ZKConsumerThread(threading.Thread):
+
+  def __init__(self, name, stream):
+    threading.Thread.__init__(self, name=name)
+
+    self.stream = stream
+    self.latch  = threading.Event()
+
+  def run(self):
+    log.info("Starting consumer thread %s..", self.name)
+
+    for message in self.stream:
+      log.info("Consumed: %s", message.payload)
+
+    self.latch.wait()
+
+  def shutdown(self):
+    self.latch.set()
+
+if __name__ == '__main__':
+  main()
