@@ -83,7 +83,7 @@ setuptools.setup(
   platforms = 'any',
 
   # What are we packaging up?
-  packages = setuptools.find_packages('kafka'),
+  packages = setuptools.find_packages('.'),
 
   zip_safe = True,
   verbose = False,
