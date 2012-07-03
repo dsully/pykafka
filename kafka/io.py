@@ -39,11 +39,12 @@ class IO(object):
 
     # Create a character array to act as the buffer.
     buf         = array.array('c', ' ' * length)
-    read_length = 0
+    bytes_left  = length
 
     try:
-      while read_length < length:
-        read_length += self.socket.recv_into(buf, length)
+      while bytes_left > 0:
+        read_length = self.socket.recv_into(buf, bytes_left)
+        bytes_left -= read_length
 
     except errno.EAGAIN:
       self.disconnect()
