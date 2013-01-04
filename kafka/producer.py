@@ -1,3 +1,4 @@
+import atexit
 import contextlib
 import itertools
 import struct
@@ -91,8 +92,10 @@ class BatchProducer(Producer):
     self.event = threading.Event()
     self.lock = threading.Lock()
     self.timer = threading.Thread(target=self._interval_timer)
+    self.timer.daemon = True
     self.connect()
     self.timer.start()
+    atexit.register(self.close)
 
   def _interval_timer(self):
     """Flush the message queue every `batch_interval` seconds."""
