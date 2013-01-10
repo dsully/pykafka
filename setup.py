@@ -74,7 +74,7 @@ setuptools.bootstrap_install_from = None
 
 setuptools.setup(
   name = 'pykafka',
-  version = '0.1.2',
+  version = '0.1.3',
   license = 'MIT',
   long_description = __doc__,
   author = "Dan Sully",

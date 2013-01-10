@@ -18,7 +18,7 @@ class TestProducers(unittest.TestCase):
     expected_msg = ('\x00\x00\x00$\x00\x00\x00\tFakeTopic\x00\x00\x00\x00'
                     '\x00\x00\x00\x0f\x00\x00\x00\x0b\x00\xcf\x02\xbb\\abc123')
     fake_socket = fake_connect.expects_call().with_args(('localhost', 1234)).returns_fake()
-    fake_write.expects_call().with_args(expected_msg)
+    fake_write.expects_call().with_args(expected_msg).returns(len(expected_msg))
     p = producer.Producer('FakeTopic', host='localhost', port=1234)
     p.send(message.Message('abc123'))
 
@@ -35,7 +35,7 @@ class TestProducers(unittest.TestCase):
     expected_msg_two = ('\x00\x00\x00$\x00\x00\x00\tFakeTopic\x00\x00\x00\x00\x00'
                         '\x00\x00\x0f\x00\x00\x00\x0b\x00\xf0\xb69\xb8jkl123')
     fake_socket = fake_connect.expects_call().with_args(('localhost', 1234)).returns_fake()
-    fake_write.expects_call().with_args(expected_msg_one).next_call().with_args(expected_msg_two)
+    fake_write.expects_call().with_args(expected_msg_one).returns(len(expected_msg_one)).next_call().with_args(expected_msg_two).returns(len(expected_msg_two))
     p = producer.BatchProducer('FakeTopic', batch_interval, host='localhost', port=1234)
     p.enqueue(message.Message('abc123'))
     p.enqueue(message.Message('def456'))
