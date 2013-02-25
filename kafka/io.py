@@ -77,6 +77,6 @@ class IO(object):
     wrote_length = 0
 
     while write_length > wrote_length:
-      wrote_length += self.socket.send(data)
+      wrote_length += self.socket.send(data[wrote_length:])
 
     return wrote_length
