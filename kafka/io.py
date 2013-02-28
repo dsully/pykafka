@@ -64,10 +64,11 @@ class IO(object):
     try:
       wrote_length = self.__write(data)
 
-    except (errno.ECONNRESET, errno.EPIPE, errno.ECONNABORTED):
+    except IOError, e:
       # Retry once.
-      self.reconnect()
-      wrote_length = self.__write(data)
+      if e.errno in (errno.ECONNRESET, errno.EPIPE, errno.ECONNABORTED):
+        self.reconnect()
+        wrote_length = self.__write(data)
 
     finally:
       return wrote_length
