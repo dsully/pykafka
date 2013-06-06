@@ -112,6 +112,7 @@ class BatchProducer(Producer):
 
   """
 
+  MAX_RESPAWNS = 5
   PRODUCE_REQUEST_ID = kafka.request_type.PRODUCE
 
   def __init__(self, topic, batch_interval, partition=0, host='localhost', port=9092):
@@ -120,11 +121,19 @@ class BatchProducer(Producer):
     self._message_queue = []
     self.event = threading.Event()
     self.lock = threading.Lock()
+    self.timer = None
+    atexit.register(self.close)
+    self.respawns = 0
+
+  def check_timer(self):
+    """Starts the flush timer and restarts it after forks."""
+    if (self.timer and self.timer.is_alive()) or self.respawns > self.MAX_RESPAWNS:
+      return
+    self.respawns += 1
     self.timer = threading.Thread(target=self._interval_timer)
     self.timer.daemon = True
     self.timer.start()
     self.connect()
-    atexit.register(self.close)
 
   def _interval_timer(self):
     """Flush the message queue every `batch_interval` seconds."""
@@ -141,6 +150,7 @@ class BatchProducer(Producer):
 
     """
     with self.lock:
+      self.check_timer()
       self._message_queue.append(message)
 
   def flush(self):
@@ -155,4 +165,5 @@ class BatchProducer(Producer):
     """Shutdown the timer thread and flush the message queue."""
     self.event.set()
     self.flush()
-    self.timer.join()
+    if self.timer:
+      self.timer.join()
